@@ -82,32 +82,52 @@ Homework with Chipotle data
 https://github.com/TheUpshot/chipotle
 '''
 
+
 '''
 PART 1: read in the data, parse it, and store it in a list of lists called 'data'
 Hint: this is a tsv file, and csv.reader() needs to be told how to handle it
 '''
+import csv
 
+with open('chipotle_orders.tsv', 'rU') as f:
+    data = [row for row in csv.reader(f, delimiter = '\t')]   
 '''
 PART 2: separate the header and data into two different lists
 '''
-
+header = data[0]
+data = data[1:]
 '''
 PART 3: calculate the average price of an order
 Hint: examine the data to see if the 'quantity' column is relevant to this calculation
 Hint: work smarter, not harder! (this can be done in a few lines of code)
 '''
-
+prices = [float(row[4][1:]) for row in data]
+num_orders = len(set([row[0] for row in data]))
+average_price = round(sum(prices)/float(num_orders), 2)
 '''
 PART 4: create a list (or set) of all unique sodas and soft drinks that they sell
 Note: just look for 'Canned Soda' and 'Canned Soft Drink', and ignore other drinks like 'Izze'
 '''
-
+sodas = []
+for row in data:
+    if 'Canned' in row[2]:
+        sodas.append(row[3][1:-1])
+        
+soft_drinks = set(sodas)
 '''
 PART 5: calculate the average number of toppings per burrito
 Note: let's ignore the 'quantity' column to simplify this task
 Hint: think carefully about the easiest way to count the number of toppings
 Hint: 'hello there'.count('e')
 '''
+num_burrito = 0
+num_topping = 0
+for row in data:
+    if 'Burrito' in row[2]:
+        num_burrito += 1
+        num_topping += row[3].count(',') + 1
+        
+average_topping = round(num_topping / float(num_burrito), 2)
 
 '''
 PART 6: create a dictionary in which the keys represent chip orders and
@@ -116,7 +136,14 @@ Expected output: {'Chips and Roasted Chili-Corn Salsa': 18, ... }
 Note: please take the 'quantity' column into account!
 Advanced: learn how to use 'defaultdict' to simplify your code
 '''
-
+chips = {}
+for row in data:
+    if 'Chips' in row[2]:
+        if row[2] in chips:
+            chips[row[2]] += int(row[1])
+        else:
+            chips[row[2]] = int(row[1])
+                
 '''
 BONUS: think of a question about this data that interests you, and then answer it!
 '''
