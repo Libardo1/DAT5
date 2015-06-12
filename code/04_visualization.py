@@ -106,16 +106,21 @@ the code output produces a plot or answers a question, give a brief
 interpretation of the output (e.g. "This plot shows X,Y,Z" or "The mean for 
 group A is higher than the mean for group B which means X,Y,Z").
 '''
+auto = pd.read_table('https://raw.githubusercontent.com/justmarkham/DAT5/master/data/auto_mpg.txt', sep='|')
 
 '''
 Part 1
 Produce a plot that compares the mean mpg for the different numbers of cylinders.
 '''
+auto.groupby('cylinders').mpg.mean().plot(kind='bar')
+plt.ylabel('Mean mpg')
+plt.title('Mean mpg for different numbers of cylinders')
 
 '''
 Part 2
 Use a scatter matrix to explore relationships between different numeric variables.
 '''
+pd.scatter_matrix(auto)
 
 '''
 Part 3
@@ -127,3 +132,13 @@ Use a plot to answer the following questions:
 -Do cars made before or after 1975 get better average mpg? (Hint: You need to 
 create a new column that encodes whether a year is before or after 1975.)
 '''
+auto.plot(kind='scatter', x='weight', y='mpg', alpha=0.4)
+
+auto.plot(kind='scatter', x='horsepower', y='displacement', alpha=0.4)
+
+auto.acceleration.hist(bins=40)
+auto.boxplot(column='acceleration', by='cylinders')
+
+auto.boxplot(column='mpg', by='cylinders')
+
+auto.groupby('after1975').mpg.median().plot(kind='bar')
