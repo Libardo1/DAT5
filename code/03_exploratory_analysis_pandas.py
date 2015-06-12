@@ -243,6 +243,7 @@ into a DataFrame.  Try looking at the "head" of the file in the command line
 to see how the file is delimited and how to load it.
 Note:  You do not need to turn in any command line code you may use.
 '''
+mpg = pd.read_table('auto_mpg.txt', sep = '|')
 
 '''
 Part 2
@@ -253,7 +254,11 @@ Get familiar with the data.  Answer the following questions:
 - What is the average value for each column?  Does that differ significantly
   from the median?
 '''
-
+mpg.shape
+mpg.columns
+mpg.describe()
+mpg.mean()
+mpg.median()
 
 '''
 Part 3
@@ -263,6 +268,16 @@ Use the data to answer the following questions:
 - Which 5 cars get the worst gas mileage?  
 - Which 5 cars with 4 or fewer cylinders get the worst gas mileage?
 '''
+mpg.sort_index(by='mpg').tail(5).car_name
+mpg.sort_index(by='mpg', ascending=False)[0:5][['car_name','mpg']]
+
+mpg[mpg.cylinders > 4].sort_index(by='mpg').tail(5).car_name
+mpg[mpg.cylinders > 4].sort_index(by='mpg', ascending=False)[0:5][['car_name','mpg']]
+
+mpg.sort_index(by='mpg').head(5).car_name
+mpg.sort_index(by='mpg')[0:5][['car_name','mpg']]
+
+mpg[mpg.cylinders <= 4].sort_index(by='mpg').head(5).car_name
 
 '''
 Part 4
@@ -278,4 +293,23 @@ Note: Be creative in the ways in which you divide up the data.  You are trying
 to create segments of the data using logical filters and comparing the mpg
 for each segment of the data.
 '''
+mpg.groupby('cylinders').mpg.mean()
+mpg.groupby('cylinders').mean()
 
+mpg.groupby('model_year').mpg.mean()
+
+mpg[mpg.weight > mpg.weight.median()].mpg.mean()
+mpg[mpg.weight <= mpg.weight.median()].mpg.mean()
+
+mpg[mpg.horsepower > mpg.horsepower.median()].mpg.mean()
+mpg[mpg.horsepower <= mpg.horsepower.median()].mpg.mean()
+
+mpg[mpg.acceleration < mpg.acceleration.quantile(0.25)].mpg.mean()
+mpg[(mpg.acceleration > mpg.acceleration.quantile(0.25)) & (mpg.acceleration < mpg.acceleration.quantile(0.75))].mpg.mean()
+mpg[mpg.acceleration > mpg.acceleration.quantile(0.75)].mpg.mean()
+
+mpg.groupby(pd.cut(mpg.horsepower,4)).mpg.mean()
+
+Ytable = pd.DataFrame()
+Ytable['low_power'] = mpg[(mpg.horsepower < 100)].groupby('model_year').mpg.mean()
+Ytable['high_power'] = mpg[(mpg.horsepower > 150)].groupby('model_year').mpg.mean()
